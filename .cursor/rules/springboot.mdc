@@ -1,0 +1,50 @@
+---
+description: Spring Boot + Java 25 Best Practices for apptdea service development
+globs: **/*
+alwaysApply: true
+---
+# Spring Boot / Java 25 - apptdea & banktdea
+
+Apply these conventions on every change in this project:
+
+## Stack
+- Java 21 / Java 25 modern features (Records, Pattern Matching, Sealed Classes, Virtual Threads)
+- Spring Boot 4.x / 3.x with Maven
+- Package base: `com.udea.apptdea` and `com.udea.banktdea`
+- Data: Spring Data JPA + PostgreSQL (with in-memory H2 dev profile fallback)
+- API docs: springdoc-openapi (Swagger UI)
+
+## Naming Conventions (Always in English)
+- Classes, interfaces, methods, fields, parameters, packages, and constants: **English only**.
+- Controllers: `*Controller`
+- Services: `*Service` / `*ServiceImpl`
+- Repositories: `*Repository`
+- Entities: Singular PascalCase (e.g., `Reservation`, `Account`, `Transaction`)
+- DTOs: Java `record` with suffix `*Dto`, `*RequestDto`, `*ResponseDto`
+
+## Architecture & Code Quality
+- Layered architecture: `controller`, `service`, `repository`, `entity`, `dto`, `exception`, `config`.
+- Constructor-based dependency injection (avoid field injection with `@Autowired`).
+- Every public method must have updated and complete Javadoc documentation (`/** ... */`).
+- Robust exception handling with `@RestControllerAdvice` and standard HTTP status codes (200, 201, 400, 404, 409, 500).
+- Open-in-view disabled (`spring.jpa.open-in-view=false`) for transaction safety.
+
+## Project Structure
+```
+src/
+├── main/
+│   ├── java/
+│   │   └── com/udea/apptdea/
+│   │       ├── config/
+│   │       ├── controller/
+│   │       ├── dto/
+│   │       ├── entity/
+│   │       ├── exception/
+│   │       ├── repository/
+│   │       ├── service/
+│   │       └── ApptdeaApplication.java
+│   └── resources/
+│       ├── application.properties
+│       └── application-dev.properties
+└── test/
+```

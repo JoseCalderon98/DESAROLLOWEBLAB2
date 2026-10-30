@@ -1,0 +1,213 @@
+<div class="page-container">
+  <!-- Toast Notification -->
+  <div *ngIf="toastMessage" class="toast" [ngClass]="toastType">
+    <div class="toast-content">
+      <span class="toast-icon">{{ toastType === 'success' ? '✅' : '⚠️' }}</span>
+      <span class="toast-text">{{ toastMessage }}</span>
+    </div>
+    <button class="toast-close" (click)="toastMessage = null">&times;</button>
+  </div>
+
+  <!-- Accounts Summary Grid -->
+  <div class="accounts-summary">
+    <div class="account-card" *ngFor="let acc of accounts">
+      <div class="account-card-header">
+        <span class="account-type">{{ acc.accountType }}</span>
+        <span class="account-status-dot"></span>
+      </div>
+      <div class="account-holder">{{ acc.accountHolder }}</div>
+      <div class="account-number">{{ acc.accountNumber }}</div>
+      <div class="account-balance">{{ acc.balance | currency:'COP':'symbol-narrow':'1.0-0' }}</div>
+    </div>
+  </div>
+
+  <!-- Main Transfer Card -->
+  <div class="card form-card">
+    <div class="card-header-row">
+      <div>
+        <h2 class="card-title">Traslado de Dinero entre Cuentas</h2>
+        <p class="card-subtitle">Transfiere fondos de manera inmediata y segura con comprobante QR digital.</p>
+      </div>
+      <span class="badge-feature">⚡ Traslado en Línea</span>
+    </div>
+
+    <form (ngSubmit)="executeTransfer()" class="banking-form">
+      <div class="form-row">
+        <!-- Source Account -->
+        <div class="form-group half-width">
+          <label for="sourceAccount">Cuenta de Origen (Débito)</label>
+          <select
+            id="sourceAccount"
+            name="sourceAccountNumber"
+            [(ngModel)]="transferData.sourceAccountNumber"
+            required
+          >
+            <option *ngFor="let acc of accounts" [value]="acc.accountNumber">
+              {{ acc.accountNumber }} - {{ acc.accountHolder }} ({{ acc.balance | currency:'COP':'symbol-narrow':'1.0-0' }})
+            </option>
+          </select>
+          <small class="helper-text" *ngIf="getSourceAccountBalance() !== null">
+            Saldo disponible: <strong>{{ getSourceAccountBalance() | currency:'COP':'symbol-narrow':'1.0-0' }}</strong>
+          </small>
+        </div>
+
+        <!-- Destination Account -->
+        <div class="form-group half-width">
+          <label for="destinationAccount">Cuenta de Destino (Crédito)</label>
+          <select
+            id="destinationAccount"
+            name="destinationAccountNumber"
+            [(ngModel)]="transferData.destinationAccountNumber"
+            required
+          >
+            <option *ngFor="let acc of accounts" [value]="acc.accountNumber">
+              {{ acc.accountNumber }} - {{ acc.accountHolder }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <!-- Amount -->
+        <div class="form-group half-width">
+          <label for="amount">Monto a Transferir ($ COP)</label>
+          <input
+            type="number"
+            id="amount"
+            name="amount"
+            [(ngModel)]="transferData.amount"
+            min="1000"
+            step="1000"
+            required
+          />
+        </div>
+
+        <!-- Concept -->
+        <div class="form-group half-width">
+          <label for="description">Concepto / Referencia Personal</label>
+          <input
+            type="text"
+            id="description"
+            name="description"
+            [(ngModel)]="transferData.description"
+            placeholder="Ej: Pago de matrícula TdeA"
+          />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="submitting">
+          <span *ngIf="!submitting">🚀 Confirmar Traslado de Dinero</span>
+          <span *ngIf="submitting">Procesando transferencia...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Historical Ledger Card -->
+  <div class="card table-card">
+    <div class="table-header">
+      <div>
+        <h2 class="card-title">Histórico de Transacciones</h2>
+        <p class="card-subtitle">Auditoría completa de movimientos financieros y comprobantes QR.</p>
+      </div>
+      <button class="btn btn-secondary btn-sm" (click)="refreshAll()">↻ Refrescar Histórico</button>
+    </div>
+
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando transacciones...</p>
+    </div>
+
+    <div *ngIf="!loading && transactions.length === 0" class="empty-state">
+      <p>No se registran transacciones aún. Realiza tu primer traslado de dinero arriba.</p>
+    </div>
+
+    <div *ngIf="!loading && transactions.length > 0" class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>REFERENCIA</th>
+            <th>FECHA / HORA</th>
+            <th>ORIGEN</th>
+            <th>DESTINO</th>
+            <th>MONTO</th>
+            <th>ESTADO</th>
+            <th>COMPROBANTE QR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of transactions">
+            <td class="col-ref"><strong>{{ t.transactionReference }}</strong></td>
+            <td>{{ t.timestamp | date:'short' }}</td>
+            <td>{{ t.sourceAccountNumber }}</td>
+            <td>{{ t.destinationAccountNumber }}</td>
+            <td class="col-amount">{{ t.amount | currency:'COP':'symbol-narrow':'1.0-0' }}</td>
+            <td>
+              <span class="status-badge badge-active">{{ t.status }}</span>
+            </td>
+            <td>
+              <button class="btn btn-qr" (click)="openReceiptModal(t)">
+                📱 Ver QR
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- QR Receipt Modal -->
+  <div class="modal-backdrop" *ngIf="selectedReceipt" (click)="closeReceiptModal()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="brand-badge">BANCO TDEA</div>
+        <button class="modal-close-btn" (click)="closeReceiptModal()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="receipt-success-badge">
+          <span>✓</span> Transacción Exitosa
+        </div>
+
+        <div class="receipt-amount">
+          {{ selectedReceipt.amount | currency:'COP':'symbol-narrow':'1.0-0' }}
+        </div>
+        <p class="receipt-note">{{ selectedReceipt.description }}</p>
+
+        <!-- QR Presentation -->
+        <div class="qr-container">
+          <div class="qr-svg-wrapper" [innerHTML]="safeQrSvg"></div>
+          <span class="qr-label">Escanea con tu celular para verificar la transacción</span>
+        </div>
+
+        <div class="receipt-details">
+          <div class="detail-row">
+            <span class="detail-label">Referencia:</span>
+            <span class="detail-value mono">{{ selectedReceipt.transactionReference }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fecha y Hora:</span>
+            <span class="detail-value">{{ selectedReceipt.timestamp | date:'medium' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Cuenta Origen:</span>
+            <span class="detail-value">{{ selectedReceipt.sourceAccountNumber }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Cuenta Destino:</span>
+            <span class="detail-value">{{ selectedReceipt.destinationAccountNumber }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Estado:</span>
+            <span class="detail-value text-green">{{ selectedReceipt.status }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary full-width" (click)="closeReceiptModal()">Cerrar Comprobante</button>
+      </div>
+    </div>
+  </div>
+</div>

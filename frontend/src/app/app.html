@@ -1,0 +1,41 @@
+<div class="app-layout">
+  <!-- Top Navigation Header -->
+  <header class="app-navbar">
+    <div class="nav-content">
+      <div class="brand">
+        <span class="brand-logo">🎓</span>
+        <div class="brand-text">
+          <span class="brand-title">Tecnológico de Antioquia</span>
+          <span class="brand-subtitle">Laboratorio Spring Boot & AI 2026</span>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'reservas'"
+          (click)="setTab('reservas')"
+        >
+          📅 1. Gestión de Reservas (Lab Guía)
+        </button>
+        <button
+          class="tab-btn"
+          [class.active]="activeTab === 'banco'"
+          (click)="setTab('banco')"
+        >
+          🏦 2. Banco & QR (Ejercicio Propuesto)
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- View Content -->
+  <main class="main-content">
+    <app-reservas *ngIf="activeTab === 'reservas'"></app-reservas>
+    <app-banco *ngIf="activeTab === 'banco'"></app-banco>
+  </main>
+
+  <footer class="app-footer">
+    <p>Desarrollado para la materia de Aplicaciones FullStack — Tecnológico de Antioquia</p>
+  </footer>
+</div>
