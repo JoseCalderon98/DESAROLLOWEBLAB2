@@ -15,3 +15,4 @@ export interface ReservationRequest {
   time: string;
   service: string;
 }
+

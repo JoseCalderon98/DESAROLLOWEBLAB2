@@ -27,3 +27,4 @@ public record ReservationRequestDto(
     String service
 ) {
 }
+

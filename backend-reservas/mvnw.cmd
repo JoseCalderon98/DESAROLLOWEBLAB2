@@ -8,3 +8,4 @@ if exist "%LOCAL_MVN%" (
 ) else (
     call mvn %*
 )
+

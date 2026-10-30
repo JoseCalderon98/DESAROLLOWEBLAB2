@@ -216,3 +216,4 @@ Se ejecutaron pruebas de compilación y empaquetado para todos los módulos del 
 2. La arquitectura basada en microservicios desacoplados permite la coexistencia armoniosa del ejercicio guía y del ejercicio propuesto sin colisión de puertos ni dependencias.
 3. La integración de códigos QR en operaciones financieras proporciona una capa adicional de confianza y trazabilidad en recibos digitales, permitiendo la verificación en tiempo real de traslados bancarios.
 4. Angular, combinado con Axios y componentes standalone, proporciona una experiencia de usuario fluida, reactiva y desacoplada del motor de persistencia del backend.
+

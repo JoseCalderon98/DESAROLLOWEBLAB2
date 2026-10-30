@@ -34,3 +34,4 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      */
     boolean existsByDateAndTimeAndStatusNot(LocalDate date, LocalTime time, ReservationStatus status);
 }
+

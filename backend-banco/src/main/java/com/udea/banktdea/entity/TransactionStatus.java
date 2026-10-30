@@ -8,3 +8,4 @@ public enum TransactionStatus {
     RECHAZADA,
     FALLIDA
 }
+

@@ -142,3 +142,4 @@ Siguiendo las buenas prácticas y arquitectura en capas del laboratorio anterior
    - Comprobante digital emergente (Modal) con el código QR escaneable desde dispositivos móviles.
    - Historial detallado de transferencias bancarias.
 ```
+

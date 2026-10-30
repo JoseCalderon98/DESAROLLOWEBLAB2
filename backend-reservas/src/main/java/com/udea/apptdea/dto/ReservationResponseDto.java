@@ -23,3 +23,4 @@ public record ReservationResponseDto(
     ReservationStatus status
 ) {
 }
+

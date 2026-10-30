@@ -21,3 +21,4 @@ public record AccountResponseDto(
     String status
 ) {
 }
+

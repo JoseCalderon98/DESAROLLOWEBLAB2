@@ -25,3 +25,4 @@ export interface TransactionReceipt {
   description: string;
   qrCodeData: string;
 }
+

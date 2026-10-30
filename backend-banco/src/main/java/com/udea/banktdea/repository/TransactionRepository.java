@@ -38,3 +38,4 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      */
     Optional<Transaction> findByTransactionReference(String transactionReference);
 }
+

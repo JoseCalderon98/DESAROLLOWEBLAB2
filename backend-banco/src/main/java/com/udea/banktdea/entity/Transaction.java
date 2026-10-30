@@ -138,3 +138,4 @@ public class Transaction {
         this.qrCodeData = qrCodeData;
     }
 }
+

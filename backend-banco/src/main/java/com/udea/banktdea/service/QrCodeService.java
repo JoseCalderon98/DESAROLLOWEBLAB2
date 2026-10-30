@@ -116,3 +116,4 @@ public class QrCodeService {
         return false;
     }
 }
+

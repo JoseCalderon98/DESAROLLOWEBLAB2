@@ -29,3 +29,4 @@ public record TransactionResponseDto(
     String qrCodeData
 ) {
 }
+
